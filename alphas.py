@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from datas import *
 import os
 import traceback
+import time
 
 class Alphas(object):
     def __init__(self, df_data):
@@ -12,8 +13,11 @@ class Alphas(object):
     @classmethod
     def calc_alpha(cls, path, func, data):
         try:
+            t1 = time.time()
             res = func(data)
             res.to_csv(path)
+            t2 = time.time()
+            print(f"Factory {os.path.splitext(os.path.basename(path))[0]} time {t2-t1}")
         except Exception as e:
             print(f"generate {path} error!!!")
             # traceback.print_exc()
@@ -117,7 +121,7 @@ class Alphas(object):
 
     @classmethod
     def generate_alphas(cls, year, list_assets, benchmark):
-        
+        t1 = time.time()
         # 获取计算因子所需股票数据
         stock_data = cls.get_stocks_data(year, list_assets, benchmark)
 
@@ -148,3 +152,5 @@ class Alphas(object):
 
         pool.close()
         pool.join()
+        t2 = time.time()
+        print(f"Total time {t2-t1}")
