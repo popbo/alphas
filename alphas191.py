@@ -1177,9 +1177,8 @@ if __name__ == '__main__':
     list_assets,df_asserts = get_zz500_stocks(f'{year}-01-01')
 
     ################ 计算所有 #################    
-    Alphas191.generate_alphas(year, list_assets,"sh000905")
+    # Alphas191.generate_alphas(year, list_assets,"sh000905")
 
     ################ 计算单个 #################
-    # stock_data = Alphas191.get_stocks_data(year, list_assets, "sh000905")
-    # ret = Alphas191(stock_data).alpha183()
-    # print(ret)
+    ret = Alphas191.generate_alpha_single('alpha001', year, list_assets, "sh000905", True)
+    print(ret)

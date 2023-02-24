@@ -90,6 +90,30 @@ class Alphas(object):
     def get_alpha_methods(cls, self):
         return (list(filter(lambda m: m.startswith("alpha") and callable(getattr(self, m)),
                             dir(self))))
+    
+    @classmethod
+    def generate_alpha_single(cls, alpha_name, year, list_assets, benchmark, need_save=False):
+        # 获取计算因子所需股票数据
+        stock_data = cls.get_stocks_data(year, list_assets, benchmark)
+
+        # 实例化因子计算的对象
+        stock = cls(stock_data)
+
+        factor = getattr(cls, alpha_name)
+        if factor is None:
+            print('alpha name is error!!!')
+            return None
+        
+        alpha_data = factor(stock)
+
+        if need_save:
+            path = f'alphas/{cls.__name__}/{year}'
+            if not os.path.isdir(path):
+                os.makedirs(path)
+            alpha_data.to_csv(f'{path}/{alpha_name}.csv')
+
+        return alpha_data
+            
 
     @classmethod
     def generate_alphas(cls, year, list_assets, benchmark):
