@@ -110,8 +110,8 @@ def Count(cond,window):
     return cond.rolling(window).apply(lambda x: x.sum())
 
 def Sumif(sr,window,cond):
-    sr1 = sr[cond]
-    return sr1.rolling(window).sum()
+    sr[~cond] = 0
+    return sr.rolling(window).sum()
 
 def Returns(df):
     return df.rolling(2).apply(lambda x: x.iloc[-1] / x.iloc[0]) - 1
@@ -424,7 +424,7 @@ class Alphas191(Alphas):
     
     def alpha052(self):   #1611
         ####SUM(MAX(0,HIGH-DELAY((HIGH+LOW+CLOSE)/3,1)),26)/SUM(MAX(0,DELAY((HIGH+LOW+CLOSE)/3,1)-L),26)*100###
-        return Sum(Tsmax(self.high-Delay((self.high+self.low+self.close)/3,1),0),26)/Sum(Tsmax(Delay((self.high+self.low+self.close)/3,1)-self.low, 0),26)*100
+        return Sum(Max(self.high-Delay((self.high+self.low+self.close)/3,1),0),26)/Sum(Max(Delay((self.high+self.low+self.close)/3,1)-self.low, 0),26)*100
     
     def alpha053(self):  
         ####COUNT(CLOSE>DELAY(CLOSE,1),12)/12*100###
@@ -436,7 +436,7 @@ class Alphas191(Alphas):
         return (-1 * Rank(((Abs(self.close - self.open)).std() + (self.close - self.open)) + Corr(self.close, self.open,10)))
     
     def alpha055(self):  #公式有问题
-        ####SUM(16*(CLOSE-DELAY(CLOSE,1)+(CLOSE-OPEN)/2+DELAY(CLOSE,1)-DELAY(OPEN,1))/((ABS(HIGH-DELAY(CLOSE,1))>ABS(LOW-DELAY(CLOSE,1)) & ABS(HIGH-DELAY(CLOSE,1))>ABS(HIGH-DELAY(LOW,1))?ABS(HIGH-DELAY(CLOSE,1))+ABS(LOW-DELAY(CLOSE,1))/2 + ABS(DELAY(CLOSE,1)-DELAY(OPEN,1))/4:(ABS(LOW-DELAY(CLOSE,1))>ABS(HIGH-DELAY(LOW,1)) & ABS(LOW-DELAY(CLOSE,1))>ABS(HIGH-DELAY(CLOSE,1))?ABS(LOW-DELAY(CLOSE,1))+ABS(HIGH-DELAY(CLOSE,1))/2+ABS(DELAY(CLOSE,1)-DELAY(OPEN,1))/4:ABS(HIGH-DELAY(LOW,1))+ABS(DELAY(CLOSE,1)-DELAY(OPEN,1))/4)))*MAX(ABS(HIGH-DELAY(CLOSE,1)),ABS(LOW-DELAY(CLOSE,1))),20)
+        ###SUM(16*(CLOSE-DELAY(CLOSE,1)+(CLOSE-OPEN)/2+DELAY(CLOSE,1)-DELAY(OPEN,1))/((ABS(HIGH-DELAY(CLOSE,1))>ABS(LOW-DELAY(CLOSE,1)) & ABS(HIGH-DELAY(CLOSE,1))>ABS(HIGH-DELAY(LOW,1))?ABS(HIGH-DELAY(CLOSE,1))+ABS(LOW-DELAY(CLOSE,1))/2 + ABS(DELAY(CLOSE,1)-DELAY(OPEN,1))/4:(ABS(LOW-DELAY(CLOSE,1))>ABS(HIGH-DELAY(LOW,1)) & ABS(LOW-DELAY(CLOSE,1))>ABS(HIGH-DELAY(CLOSE,1))?ABS(LOW-DELAY(CLOSE,1))+ABS(HIGH-DELAY(CLOSE,1))/2+ABS(DELAY(CLOSE,1)-DELAY(OPEN,1))/4:ABS(HIGH-DELAY(LOW,1))+ABS(DELAY(CLOSE,1)-DELAY(OPEN,1))/4)))*MAX(ABS(HIGH-DELAY(CLOSE,1)),ABS(LOW-DELAY(CLOSE,1))),20)
         A = Abs(self.high - Delay(self.close, 1))
         B = Abs(self.low - Delay(self.close, 1))
         C = Abs(self.high - Delay(self.low, 1))
@@ -449,8 +449,9 @@ class Alphas191(Alphas):
         part1[cond1] = Abs(self.high - Delay(self.close, 1)) + Abs(self.low - Delay(self.close, 1))/2 + Abs(Delay(self.close, 1)-Delay(self.open, 1))/4
         part1[cond2] = Abs(self.low - Delay(self.close, 1)) + Abs(self.high - Delay(self.close, 1))/2 + Abs(Delay(self.close, 1)-Delay(self.open, 1))/4
         part1[cond3] = Abs(self.high - Delay(self.low, 1)) + Abs(Delay(self.close, 1)-Delay(self.open, 1))/4
+        part2=Max(Abs(self.high-Delay(self.close,1)),Abs(self.low-Delay(self.close,1)))
         
-        return Sum(part0/part1,20)
+        return Sum(part0/part1*part2,20)
     
     def alpha056(self):  
         ####(RANK((OPEN - TSMIN(OPEN, 12))) < RANK((RANK(CORR(SUM(((HIGH + LOW) / 2), 19),SUM(MEAN(VOLUME,40), 19), 13))^5)))###
@@ -499,7 +500,7 @@ class Alphas191(Alphas):
     
     def alpha063(self):   #1789
         ####SMA(MAX(CLOSE-DELAY(CLOSE,1),0),6,1)/SMA(ABS(CLOSE-DELAY(CLOSE,1)),6,1)*100###
-        return Sma(Tsmax(self.close-Delay(self.close,1),0),6,1)/Sma(Abs(self.close-Delay(self.close,1)),6,1)*100
+        return Sma(Max(self.close-Delay(self.close,1),0),6,1)/Sma(Abs(self.close-Delay(self.close,1)),6,1)*100
     
     def alpha064(self):   #1774
         ####(MAX(RANK(DECAYLINEAR(CORR(RANK(VWAP), RANK(VOLUME), 4), 4)),RANK(DECAYLINEAR(MAX(CORR(RANK(CLOSE), RANK(MEAN(VOLUME,60)), 4), 13), 14))) * -1)###
@@ -515,7 +516,9 @@ class Alphas191(Alphas):
     
     def alpha067(self):   #1759
         ####SMA(MAX(CLOSE-DELAY(CLOSE,1),0),24,1)/SMA(ABS(CLOSE-DELAY(CLOSE,1)),24,1)*100###
-        return Sma(Tsmax(self.close-Delay(self.close,1),0),24,1)/Sma(Abs(self.close-Delay(self.close,1)),24,1)*100
+        a1 = Sma(Max(self.close-Delay(self.close,1),0),24,1)
+        a2 = Sma(Abs(self.close-Delay(self.close,1)),24,1)
+        return a1/a2*100
     
     def alpha068(self):   #1790
         ####SMA(((HIGH+LOW)/2-(DELAY(HIGH,1)+DELAY(LOW,1))/2)*(HIGH-LOW)/VOLUME,15,2)###
@@ -583,7 +586,7 @@ class Alphas191(Alphas):
     
     def alpha079(self):   #1789
         ####SMA(MAX(CLOSE-DELAY(CLOSE,1),0),12,1)/SMA(ABS(CLOSE-DELAY(CLOSE,1)),12,1)*100###
-        return Sma(Tsmax(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100
+        return Sma(Max(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100
     
     def alpha080(self):   #1776
         ####(VOLUME-DELAY(VOLUME,5))/DELAY(VOLUME,5)*100###
@@ -711,7 +714,7 @@ class Alphas191(Alphas):
     
     def alpha102(self):   #1790
         ####SMA(MAX(VOLUME-DELAY(VOLUME,1),0),6,1)/SMA(ABS(VOLUME-DELAY(VOLUME,1)),6,1)*100###
-        return Sma(Tsmax(self.volume-Delay(self.volume,1),0),6,1)/Sma(Abs(self.volume-Delay(self.volume,1)),6,1)*100
+        return Sma(Max(self.volume-Delay(self.volume,1),0),6,1)/Sma(Abs(self.volume-Delay(self.volume,1)),6,1)*100
     
     def alpha103(self):  
         ####((20-LOWDAY(LOW,20))/20)*100###
@@ -743,7 +746,7 @@ class Alphas191(Alphas):
     
     def alpha110(self):   #1650
         ####SUM(MAX(0,HIGH-DELAY(CLOSE,1)),20)/SUM(MAX(0,DELAY(CLOSE,1)-LOW),20)*100###
-        return Sum(Tsmax(self.high-Delay(self.close,1),0),20)/Sum(Tsmax(Delay(self.close,1)-self.low,0),20)*100
+        return Sum(Max(self.high-Delay(self.close,1),0),20)/Sum(Max(Delay(self.close,1)-self.low,0),20)*100
       
     def alpha111(self):   #1789
         ####SMA(VOL*((CLOSE-LOW)-(HIGH-CLOSE))/(HIGH-LOW),11,2)-SMA(VOL*((CLOSE-LOW)-(HIGH-CLOSE))/(HIGH-LOW),4,2)###
@@ -1004,7 +1007,7 @@ class Alphas191(Alphas):
     
     def alpha162(self):   #1789
         ####(SMA(MAX(CLOSE-DELAY(CLOSE,1),0),12,1)/SMA(ABS(CLOSE-DELAY(CLOSE,1)),12,1)*100-MIN(SMA(MAX(CLOSE-DELAY(CLOSE,1),0),12,1)/SMA(ABS(CLOSE-DELAY(CLOSE,1)),12,1)*100,12))/(MAX(SMA(MAX(CLOSE-DELAY(CLOSE,1),0),12,1)/SMA(ABS(CLOSE-DELAY(CLOSE,1)),12,1)*100,12)-MIN(SMA(MAX(CLOSE-DELAY(CLOSE,1),0),12,1)/SMA(ABS(CLOSE-DELAY(CLOSE,1)),12,1)*100,12))###
-        return (Sma(Tsmax(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100-Tsmin(Sma(Tsmax(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100,12))/(Sma(Sma(Tsmax(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100,12,1)-Tsmin(Sma(Tsmax(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100,12))
+        return (Sma(Max(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100-Tsmin(Sma(Max(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100,12))/(Sma(Sma(Max(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100,12,1)-Tsmin(Sma(Max(self.close-Delay(self.close,1),0),12,1)/Sma(Abs(self.close-Delay(self.close,1)),12,1)*100,12))
     
     def alpha163(self):   #1657
         ####RANK(((((-1 * RET) * MEAN(VOLUME,20)) * VWAP) * (HIGH - CLOSE)))###
@@ -1180,5 +1183,5 @@ if __name__ == '__main__':
     Alphas191.generate_alphas(year, list_assets,"sh000905")
 
     ################ 计算单个 #################
-    # ret = Alphas191.generate_alpha_single('alpha001', year, list_assets, "sh000905", True)
+    # ret = Alphas191.generate_alpha_single('alpha138', year, list_assets, "sh000905", True)
     # print(ret)

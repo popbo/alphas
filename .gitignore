@@ -2,3 +2,6 @@ alphas/
 data_bfq/
 index/
 __pycache__/
+*.csv
+test*
+alphalens/
