@@ -198,7 +198,7 @@ class Alphas101(Alphas):
         self.high = df_data['high'] # 最高价
         self.low = df_data['low'] # 最低价
         self.close = df_data['close'] # 收盘价
-        self.volume = df_data['vol'] # 成交量
+        self.volume = df_data['volume'] # 成交量
         self.returns = returns(df_data['close']) # 日收益
         self.vwap = df_data['vwap']  # 成交均价
 
@@ -730,11 +730,11 @@ class Alphas101(Alphas):
 if __name__ == '__main__':
     # generate_alphas('2020', Alphas)
     year = '2019'
-    list_assets,df_asserts = get_zz500_stocks(f'{year}-01-01')
+    list_assets,df_asserts = get_hs300_stocks(f'{year}-01-01')
 
     ################ 计算所有 #################   
-    # Alphas101.generate_alphas(year, list_assets,"sh000905")
+    Alphas101.generate_alphas(year, list_assets,"sh000300")
 
     ################ 计算单个 #################
-    ret = Alphas101.generate_alpha_single('alpha096', year, list_assets, "sh000905", True)
-    print(ret)
+    # ret = Alphas101.generate_alpha_single('alpha096', year, list_assets, "sh000905", True)
+    # print(ret)
