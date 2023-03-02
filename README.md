@@ -22,4 +22,4 @@ datas.py-----股票数据下载，支持多进程
 
 3.在1.research.ipynb里分析因子
 
-2.在2.backtrader.ipynb回测
+4.在2.backtrader.ipynb回测
