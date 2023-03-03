@@ -728,7 +728,7 @@ class Alphas101(Alphas):
 
 
 if __name__ == '__main__':
-    year = '2019'
+    year = '2023'
     list_assets,df_asserts = get_hs300_stocks(f'{year}-01-01')
 
     ################ 计算所有 #################   
