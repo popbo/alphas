@@ -56,9 +56,7 @@ class Alphas(object):
         print(len(list_all))
 
         # 所有股票日数据拼接成一张表
-        df_all = pd.DataFrame()
-        for df in list_all:
-            df_all = df_all.append(df)
+        df_all = pd.concat(list_all)
             
         # 修改列名
         df_all = df_all.rename(columns={

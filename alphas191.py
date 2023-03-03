@@ -1183,5 +1183,5 @@ if __name__ == '__main__':
     Alphas191.generate_alphas(year, list_assets,"sh000300")
 
     ################ 计算单个 #################
-    # ret = Alphas191.generate_alpha_single('alpha170', year, list_assets, "sh000905", True)
+    # ret = Alphas191.generate_alpha_single('alpha170', year, list_assets, "sh000300", True)
     # print(ret)

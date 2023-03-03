@@ -45,9 +45,7 @@ def get_all_date_data(start_time, end_time, list_assets):
     print(len(list_all))
 
     # 所有股票日数据拼接成一张表
-    df_all = pd.DataFrame()
-    for df in list_all:
-        df_all = df_all.append(df)
+    df_all = pd.concat(list_all)
         
     # 修改列名
     df_all = df_all.rename(columns={
@@ -128,6 +126,5 @@ def download_index_data(code):
     stock_zh_index_daily_df.to_csv(f'{path}/{code}.csv')
 
 if __name__ == '__main__':
-    # print(get_zz500_stocks('2019-01-01'))
     download_index_data("sh000300")
-    # download_all_date_data("bfq")
+    download_all_date_data("bfq")

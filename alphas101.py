@@ -728,7 +728,6 @@ class Alphas101(Alphas):
 
 
 if __name__ == '__main__':
-    # generate_alphas('2020', Alphas)
     year = '2019'
     list_assets,df_asserts = get_hs300_stocks(f'{year}-01-01')
 
@@ -736,5 +735,5 @@ if __name__ == '__main__':
     Alphas101.generate_alphas(year, list_assets,"sh000300")
 
     ################ 计算单个 #################
-    # ret = Alphas101.generate_alpha_single('alpha096', year, list_assets, "sh000905", True)
+    # ret = Alphas101.generate_alpha_single('alpha096', year, list_assets, "sh000300", True)
     # print(ret)
