@@ -67,13 +67,15 @@ class Alphas(object):
             "最低": "low", 
             "成交量": "volume", 
             "成交额": "amount",
-            "涨跌幅": "pctChg"})
+            "涨跌幅": "pctChg",
+            "换手率": "turnover"})
         # 计算平均成交价
         df_all['vwap'] =  df_all.amount / df_all.volume / 100
+        df_all['turnover']  = df_all['turnover']/100
 
         # 返回计算因子需要的列
         df_all = df_all.reset_index()
-        df_all = df_all[['asset','date', "open", "close", "high", "low", "volume", "amount", 'vwap', "pctChg", 'benchmark_open', 'benchmark_close']]
+        df_all = df_all[['asset','date', "open", "close", "high", "low", "volume", "amount", 'vwap', "pctChg", 'turnover', 'benchmark_open', 'benchmark_close']]
         # ddu = df_all[df_all.duplicated()]
         df_all=df_all[df_all['asset'].notnull()]
         return df_all.pivot(index='date', columns='asset') 
