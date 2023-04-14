@@ -4,7 +4,5 @@ index/
 __pycache__/
 *.csv
 test*
-analy*
 analysis/
-3.*
 alphas_*
